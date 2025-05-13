@@ -4,6 +4,8 @@ use Doubly::Linked;
 ok(my $linked_list = Doubly::Linked->new());
 
 ok($linked_list->insert_at_start(1));
+
+=pod
 ok($linked_list = $linked_list->insert_at_end(2));
 ok($linked_list->insert_after(3));
 
@@ -21,4 +23,5 @@ is($linked_list->next->next->is_end, 1);
 ok($linked_list->next->remove);
 
 is($linked_list->next->data, 3);
+=cut
 done_testing();

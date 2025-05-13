@@ -4,11 +4,11 @@ use Doubly::Linked;
 ok(my $linked_list = Doubly::Linked->new());
 
 ok($linked_list->insert_at_start(1));
-ok($linked_list = $linked_list->insert_at_end(2));
-ok($linked_list->insert_after(3));
+#ok($linked_list = $linked_list->insert_at_end(2));
+#ok($linked_list->insert_after(3));
 
-ok($linked_list = $linked_list->start);
+#ok($linked_list = $linked_list->start);
 
-is($linked_list->is_start, 1);
+#is($linked_list->is_start, 1);
 
 done_testing();

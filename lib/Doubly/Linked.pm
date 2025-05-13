@@ -3,7 +3,7 @@ package Doubly::Linked;
 use 5.006;
 use strict;
 use warnings;
-our $VERSION = '0.02';
+our $VERSION = '0.06';
 
 require XSLoader;
 XSLoader::load('Doubly::Linked', $VERSION);
@@ -18,7 +18,7 @@ Doubly::Linked - Doubly linked lists
 
 =head1 VERSION
 
-Version 0.02
+Version 0.06
 
 =cut
 
@@ -39,9 +39,15 @@ Version 0.02
 	$list->data;
 	$list->data($new_data);
 
-	$list = $list->remove;
+	$list->remove;
 
 	$list = $list->find(sub { return ... ? 1 : 0 });
+
+=head1 DESCRIPTION
+
+A doubly linked list is a type of linked list in which each node contains 3 parts, a data part and two addresses, one points to the previous node and one for the next node. It differs from the singly linked list as it has an extra pointer called previous that points to the previous node, allowing the traversal in both forward and backward directions.
+
+=for html <img style="width:500px" src="https://raw.githubusercontent.com/ThisUsedToBeAnEmail/Doubly-Linked/master/doubly-linked.png" title="img-tag, local-dist" alt="Inlineimage" />
 
 =head1 SUBROUTINES/METHODS
 
@@ -135,6 +141,30 @@ Insert a new item at the end of the list.
 Insert a new item by index from the start of the list.
 
 	$list->insert_at_pos(2, "third");
+
+=head2 remove
+
+Remove the current item.
+
+	$list->remove();
+
+=head2 remove_from_start
+
+Remove the first item from the list.
+
+	$list->remove_from_start();
+
+=head2 remove_from_end
+
+Remove the last item from the list.
+
+	$list->remove_from_end();
+
+=head2 remove_from_pos
+
+Remove an item by index from the list.
+
+	$lst->remove_from_pos($index);
 
 =head2 find
 
