@@ -49,7 +49,7 @@ SV * _new (SV * pkg, SV * data) {
 	return sv_bless(newRV_noinc((SV*)hash), gv_stashsv(pkg, 0));
 }
 
-SV * _start ( SV * self ) {
+SV * _goto_start ( SV * self ) {
 	dTHX;
 	HV * hash = (HV*)SvRV(self);
 
@@ -72,7 +72,7 @@ SV * _is_start ( SV * self ) {
 	return newSViv(1);
 }
 
-SV * _end ( SV * self ) {
+SV * _goto_end ( SV * self ) {
 	dTHX;
 	HV * hash = (HV*)SvRV(self);
 
@@ -96,7 +96,7 @@ SV * _is_end ( SV * self ) {
 
 SV * _length (SV * self) {
 	dTHX;	
-	self = _start(self);
+	self = _goto_start(self);
 	HV * hash = (HV*)SvRV(self);
 	
 	int len = _defined(hash, "next", 4) ? 1 : _defined(hash, "data", 4) ? 1 : 0;;
@@ -113,7 +113,7 @@ SV * _length (SV * self) {
 SV * _find ( SV * self, SV * cb ) {
 	dTHX;
 
-	self = _start(self);
+	self = _goto_start(self);
 	HV * hash = (HV*)SvRV(self);
 	SV * data = *hv_fetch(hash, "data", 4, 0);
 
@@ -125,6 +125,7 @@ SV * _find ( SV * self, SV * cb ) {
 	if (SvTRUEx(*PL_stack_sp)) {
 		return newSVsv(self);
 	}
+	POPs;
 	
 	while (_defined(hash, "next", 4)) {
 		self = *hv_fetch(hash, "next", 4, 0);
@@ -138,6 +139,7 @@ SV * _find ( SV * self, SV * cb ) {
 		if (SvTRUEx(*PL_stack_sp)) {
 			return newSVsv(self);
 		}
+		POPs;
 	}
 
 	return &PL_sv_undef;
@@ -195,7 +197,7 @@ SV * _insert_after (SV * self, SV * data) {
 	return node;
 }
 
-SV * _insert (SV * self, SV * cb, SV * data) {
+SV * _insert_find (SV * self, SV * cb, SV * data) {
 	dTHX;
 	if (_is_undef(self)) {
 		return _set_data(self, data);
@@ -216,7 +218,7 @@ SV * _insert_at_pos (SV * self, int pos, SV * data) {
 		return _set_data(self, data);
 	}
 
-	self = _start(self);
+	self = _goto_start(self);
 	HV * hash = (HV*)SvRV(self);
 
 	int i = 0;
@@ -236,7 +238,7 @@ SV * _insert_at_start (SV * self, SV * data) {
 		return _set_data(self, data);
 	}
 
-	self = _start(self);
+	self = _goto_start(self);
 	HV * hash = (HV*)SvRV(self);
 	
 	SV * node = _new(self, data);
@@ -254,7 +256,7 @@ SV * _insert_at_end (SV * self, SV * data) {
 		return _set_data(self, data);
 	}
 
-	self = _end(self);
+	self = _goto_end(self);
 	HV * hash = (HV*)SvRV(self);
 
 	SV * node = _new(self, data);
@@ -309,7 +311,7 @@ SV * _remove_from_start(SV * self) {
 		return &PL_sv_undef;
 	}
 
-	self = _start(self);
+	self = _goto_start(self);
 
 	return _remove(self);
 }
@@ -321,7 +323,7 @@ SV * _remove_from_end(SV * self) {
 		return &PL_sv_undef;
 	}
 
-	self = _end(self);
+	self = _goto_end(self);
 
 	return _remove(self);
 }
@@ -333,7 +335,7 @@ SV * _remove_from_pos (SV * self, int pos) {
 		return &PL_sv_undef;
 	}
 
-	self = _start(self);
+	self = _goto_start(self);
 	HV * hash = (HV*)SvRV(self);
 
 	int i = 0;
@@ -349,8 +351,7 @@ SV * _remove_from_pos (SV * self, int pos) {
 
 
 MODULE = Doubly::Linked  PACKAGE = Doubly::Linked
-PROTOTYPES: ENABLE
-FALLBACK: TRUE
+PROTOTYPES: DISABLE
 
 SV *
 new(...)
@@ -384,7 +385,7 @@ SV *
 start(self)
 	SV * self
 	CODE:
-		RETVAL = newSVsv(_start(self));
+		RETVAL = newSVsv(_goto_start(self));
 	OUTPUT:
 		RETVAL
 
@@ -400,7 +401,7 @@ SV *
 end(self)
 	SV * self
 	CODE:
-		RETVAL = newSVsv(_end(self));
+		RETVAL = newSVsv(_goto_end(self));
 	OUTPUT:
 		RETVAL
 
@@ -436,7 +437,7 @@ SV *
 bulk_add(self, ...)
 	SV * self
 	CODE:
-		self = _end(self);
+		self = _goto_end(self);
 		if (items > 1) {
 			int i = 1;
 			for (i = 1; i < items; i++) {
@@ -459,7 +460,7 @@ insert(self, cb, ...)
 	SV * self
 	SV * cb
 	CODE:
-		RETVAL = _insert(self, cb, newSVsv(ST(2)));
+		RETVAL = newSVsv(_insert_find(self, cb, newSVsv(ST(2))));
 	OUTPUT:
 		RETVAL
 
@@ -539,3 +540,4 @@ find(self, cb)
 		RETVAL = _find(self, cb);
 	OUTPUT:
 		RETVAL
+

@@ -1,4 +1,5 @@
 Changes
+doubly-linked.png
 ignore.txt
 lib/Doubly/Linked.pm
 lib/Doubly/Linked.xs
@@ -24,7 +25,10 @@ t/14-remove_from_start.t
 t/15-remove_from_end.t
 t/16-remove_from_pos.t
 t/17-find.t
+t/18-remove-add.t
 t/manifest.t
 t/pod-coverage.t
 t/pod.t
 xt/boilerplate.t
+META.yml                                 Module YAML meta-data (added by MakeMaker)
+META.json                                Module JSON meta-data (added by MakeMaker)
