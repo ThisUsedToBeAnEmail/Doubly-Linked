@@ -476,9 +476,10 @@ bulk_add(self, ...)
 		if (items > 1) {
 			int i = 1;
 			for (i = 1; i < items; i++) {
-				RETVAL = _insert_at_end(self, newSVsv(ST(i)));
+				self = _insert_after(self, newSVsv(ST(i)));
 			}
 		}
+		RETVAL = self;
 	OUTPUT:
 		RETVAL
 
